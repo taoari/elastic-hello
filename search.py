@@ -8,11 +8,22 @@ from sentence_transformers import SentenceTransformer
 
 load_dotenv()
 
+def _get_hash(content: str, is_file: bool = False) -> str:
+    """Generate an MD5 hash for a string or a file."""
+    import hashlib
+    if is_file:
+        with open(content, "rb") as file:
+            file_hash = hashlib.md5()
+            while chunk := file.read(8192):
+                file_hash.update(chunk)
+            return file_hash.hexdigest()
+    return hashlib.md5(content.encode('utf8')).hexdigest()
+
 
 class Search:
     def __init__(self):
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
-        self.es = Elasticsearch('http://localhost:9200',
+        self.es = Elasticsearch("http://localhost:9200",
             # cloud_id=os.environ["ELASTIC_CLOUD_ID"],
             # api_key=os.environ["ELASTIC_API_KEY"],
         )
@@ -39,6 +50,7 @@ class Search:
     def insert_document(self, document):
         return self.es.index(
             index="my_documents",
+            id=_get_hash(document['content']),
             document={
                 **document,
                 "embedding": self.get_embedding(document["summary"]),
@@ -48,7 +60,7 @@ class Search:
     def insert_documents(self, documents):
         operations = []
         for document in documents:
-            operations.append({"index": {"_index": "my_documents"}})
+            operations.append({"index": {"_index": "my_documents", "_id": _get_hash(document['content'])}})
             operations.append(
                 {
                     **document,
