@@ -12,9 +12,9 @@ load_dotenv()
 class Search:
     def __init__(self):
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
-        self.es = Elasticsearch(
-            cloud_id=os.environ["ELASTIC_CLOUD_ID"],
-            api_key=os.environ["ELASTIC_API_KEY"],
+        self.es = Elasticsearch('http://localhost:9200',
+            # cloud_id=os.environ["ELASTIC_CLOUD_ID"],
+            # api_key=os.environ["ELASTIC_API_KEY"],
         )
         client_info = self.es.info()
         print("Connected to Elasticsearch!")

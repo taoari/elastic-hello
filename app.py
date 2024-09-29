@@ -31,14 +31,14 @@ def handle_search():
 
     results = es.search(
         query={"bool": {**search_query, **filters}},
-        knn={
-            "field": "embedding",
-            "query_vector": es.get_embedding(parsed_query),
-            "k": 10,
-            "num_candidates": 50,
-            **filters,
-        },
-        rank={"rrf": {}},
+        # knn={
+        #     "field": "embedding",
+        #     "query_vector": es.get_embedding(parsed_query),
+        #     "k": 10,
+        #     "num_candidates": 50,
+        #     **filters,
+        # },
+        # rank={"rrf": {}},
         aggs={
             "category-agg": {
                 "terms": {
