@@ -23,10 +23,12 @@ def _get_hash(content: str, is_file: bool = False) -> str:
 class Search:
     def __init__(self):
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
-        self.es = Elasticsearch("http://localhost:9200",
-            # cloud_id=os.environ["ELASTIC_CLOUD_ID"],
-            # api_key=os.environ["ELASTIC_API_KEY"],
-        )
+        self.es = Elasticsearch(
+                "https://localhost:9200",
+                ca_certs="ca.crt",
+                basic_auth=("elastic", "elastic"),
+            )
+
         client_info = self.es.info()
         print("Connected to Elasticsearch!")
         pprint(client_info.body)
